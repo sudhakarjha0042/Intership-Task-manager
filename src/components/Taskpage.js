@@ -13,9 +13,15 @@ import {
 import { db  } from "./firebase";
 import { useAuthValue } from "./AuthContext";
 import "./Taskpage.css";
+import './profile.css'
+import { signOut } from 'firebase/auth' 
+import { auth } from './firebase'
+
+
 
 function Taskpage() {
   const auth = useAuthValue();
+  const {currentUser} = useAuthValue()
   const user = auth.currentUser;
 
   const [tasks, setTasks] = useState([]);
@@ -247,6 +253,17 @@ function Taskpage() {
 
   return (
     <div className="taskpage-container">
+    <div className='center'>
+    <div className='profile'>
+      <h1>Profile</h1>
+      <p><strong>Email: </strong>{currentUser?.email}</p>
+      <p>
+        <strong>Email verified: </strong>
+        {`${currentUser?.emailVerified}`}
+      </p>
+      <span onClick={() => signOut(auth)}>Sign Out</span>
+    </div>
+  </div>
       <div className="task-form">
         <form onSubmit={handleSubmitTask}>
           <input
