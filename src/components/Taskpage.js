@@ -14,13 +14,14 @@ import { db  } from "./firebase";
 import { useAuthValue } from "./AuthContext";
 import "./Taskpage.css";
 import './profile.css'
-import { signOut } from 'firebase/auth' 
+import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
 
 
 
+
 function Taskpage() {
-  const auth = useAuthValue();
+  // const auth = useAuthValue();
   const {currentUser} = useAuthValue()
   const user = auth.currentUser;
 
@@ -123,39 +124,39 @@ function Taskpage() {
   };
   const handleShareTask = async (taskId) => {
     const emailToShareWith = prompt('Enter the email of the user to share the task with:');
-  
+
     if (!emailToShareWith) {
       return;
     }
-  
+
     const taskRef = doc(db, 'tasks', taskId);
-  
+
     try {
       const taskDoc = await getDoc(taskRef);
-  
+
       if (taskDoc.exists()) {
         const taskData = taskDoc.data();
-  
+
         if (taskData.sharedWith && taskData.sharedWith.includes(emailToShareWith)) {
           console.log('Task is already shared with this user.');
           return;
         }
-  
+
         const updatedSharedWith = taskData.sharedWith ? [...taskData.sharedWith, emailToShareWith] : [emailToShareWith];
-  
+
         await updateDoc(taskRef, { sharedWith: updatedSharedWith });
         console.log('Task shared');
-  
+
         // After sharing the task, send a notification to the recipient
         const notificationData = {
           title: 'Task Shared',
           body: 'You have a new shared task.',
         };
-        
+
         // Retrieve the recipient's FCM token from the database based on their email
         const recipientUserDoc = await db.collection('users').where('email', '==', emailToShareWith).get();
-        console.log('recipientUserDoc: ', recipientUserDoc);  
-  
+        console.log('recipientUserDoc: ', recipientUserDoc);
+
         if (recipientUserDoc.docs.length > 0) {
           const recipientToken = recipientUserDoc.docs[0].data().fcmToken;
           console.log('recipientToken: ', recipientToken);
@@ -177,7 +178,7 @@ function Taskpage() {
       console.error('Error sharing task: ', error);
     }
   };
-  
+
 
   const handleEditTask = (taskId) => {
     setEditingTaskId(taskId);
@@ -251,6 +252,17 @@ function Taskpage() {
     }
   };
 
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        // Redirect to the login page after signing out
+        window.location.href = "/login";
+      })
+      .catch((error) => {
+        console.error("Error signing out:", error);
+      });
+  };
+
   return (
     <div className="taskpage-container">
     <div className='center'>
@@ -261,7 +273,7 @@ function Taskpage() {
         <strong>Email verified: </strong>
         {`${currentUser?.emailVerified}`}
       </p>
-      <span onClick={() => signOut(auth)}>Sign Out</span>
+      <span onClick={handleSignOut}>Sign Out</span>
     </div>
   </div>
       <div className="task-form">
