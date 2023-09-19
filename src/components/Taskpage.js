@@ -11,11 +11,15 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db  } from "./firebase";
-import { useAuthValue } from "./AuthContext";
+import { useAuthValue } from "./Authentication/AuthContext";
 import "./Taskpage.css";
 import './profile.css'
 import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
+import SendEmail from "./SendEmail";
+
+
+
 
 
 
@@ -139,7 +143,7 @@ function Taskpage() {
 
         if (taskData.sharedWith && taskData.sharedWith.includes(emailToShareWith)) {
           console.log('Task is already shared with this user.');
-          return;
+          // return;
         }
 
         const updatedSharedWith = taskData.sharedWith ? [...taskData.sharedWith, emailToShareWith] : [emailToShareWith];
@@ -150,29 +154,12 @@ function Taskpage() {
         // After sharing the task, send a notification to the recipient
         const notificationData = {
           title: 'Task Shared',
-          body: 'You have a new shared task.',
+          task_title: taskData.task,
+          task_description: taskData.description,
+          task_due_date: taskData.dueDate,
         };
 
-        // Retrieve the recipient's FCM token from the database based on their email
-        const recipientUserDoc = await db.collection('users').where('email', '==', emailToShareWith).get();
-        console.log('recipientUserDoc: ', recipientUserDoc);
-
-        if (recipientUserDoc.docs.length > 0) {
-          const recipientToken = recipientUserDoc.docs[0].data().fcmToken;
-          console.log('recipientToken: ', recipientToken);
-          if (recipientToken) {
-            console.log('Sending notification to recipient.');
-            console.log('notificationData: ', recipientToken);
-            // Send the notification to the recipient by FCM token
-            // sendNotification(recipientToken, notificationData);
-          } else {
-            console.error("Recipient's FCM token not found.");
-          }
-        } else {
-          console.error('Recipient not found.');
-        }
-      } else {
-        console.log('Task not found.');
+        SendEmail(window, emailToShareWith,notificationData,currentUser);
       }
     } catch (error) {
       console.error('Error sharing task: ', error);

@@ -2,7 +2,7 @@ import {useState} from 'react'
 import { Link } from 'react-router-dom'
 import './forms.css'
 import {signInWithEmailAndPassword, sendEmailVerification} from 'firebase/auth'
-import {auth} from './firebase'
+import {auth} from '../firebase'
 import {useNavigate} from 'react-router-dom'
 import {useAuthValue} from './AuthContext'
 
@@ -58,6 +58,10 @@ function Login(){
         <p>
           Don't have and account? 
           <Link to='/register'>Create one here</Link>
+        </p>
+        <p>
+          Forgot Password? 
+          <Link to='/forgotpassword'>Forgot Password</Link>
         </p>
       </div>
     </div>

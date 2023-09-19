@@ -1,13 +1,14 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Register from './components/Register';
-import VerifyEmail from './components/VerifyEmail';
-import Login from './components/Login';
+import Register from './components/Authentication/Register';
+import VerifyEmail from './components/Authentication/VerifyEmail';
+import Login from './components/Authentication/Login';
 import { useState, useEffect } from 'react';
-import { AuthProvider } from './components/AuthContext';
+import { AuthProvider } from './components/Authentication/AuthContext';
 import { auth } from './components/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Taskpage from './components/Taskpage';
+import Forgotpassword from './components/Forgotpassword';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -35,6 +36,7 @@ function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgotpassword" element={<Forgotpassword />} />
           
           <Route
             path="/taskpage"
